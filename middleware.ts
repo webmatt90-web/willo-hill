@@ -9,6 +9,9 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
+  // Node runtime (stable in Next 15.5, runs on Vercel Fluid Compute):
+  // the edge runtime kept failing with MIDDLEWARE_INVOCATION_FAILED.
+  runtime: "nodejs",
   matcher: [
     /*
      * Match all request paths except static assets and images.
