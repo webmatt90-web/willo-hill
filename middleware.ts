@@ -1,17 +1,25 @@
-import { type NextRequest } from "next/server";
-// Relative import on purpose: Vercel's edge bundler leaves the "@/" alias
-// unresolved in middleware and fails the deploy ("referencing unsupported
-// modules").
-import { updateSession } from "./lib/supabase/middleware";
+import { NextResponse, type NextRequest } from "next/server";
 
-export async function middleware(request: NextRequest) {
-  return await updateSession(request);
+// DIAGNOSTIC build: bare middleware with zero dependencies, to isolate
+// Vercel's MIDDLEWARE_INVOCATION_FAILED. Admin stays safe regardless —
+// every server action calls requireAdmin() and all data access is
+// RLS-enforced; middleware is only the redirect UX layer.
+export function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+  if (pathname.startsWith("/admin") && pathname !== "/admin/login") {
+    const hasSession = request.cookies
+      .getAll()
+      .some((c) => c.name.startsWith("sb-") && c.value);
+    if (!hasSession) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/admin/login";
+      return NextResponse.redirect(url);
+    }
+  }
+  return NextResponse.next();
 }
 
 export const config = {
-  // Node runtime (stable in Next 15.5, runs on Vercel Fluid Compute):
-  // the edge runtime kept failing with MIDDLEWARE_INVOCATION_FAILED.
-  runtime: "nodejs",
   matcher: [
     /*
      * Match all request paths except static assets and images.
