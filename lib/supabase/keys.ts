@@ -4,7 +4,13 @@
  * references must appear literally.
  */
 export function getSupabaseUrl(): string {
-  return process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
+  // Normalize a protocol-less value (e.g. pasted into Vercel without
+  // https://) — supabase-js throws on it and that kills the build.
+  const raw = (process.env.NEXT_PUBLIC_SUPABASE_URL ?? "").trim();
+  if (!raw) return "";
+  return raw.startsWith("http://") || raw.startsWith("https://")
+    ? raw
+    : `https://${raw}`;
 }
 
 export function getSupabasePublicKey(): string {
