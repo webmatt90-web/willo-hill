@@ -1,6 +1,5 @@
 import type { MetadataRoute } from "next";
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://willohill.com";
+import { SITE_URL } from "@/lib/site-url";
 
 const ROUTES: { path: string; priority: number }[] = [
   { path: "", priority: 1 },

@@ -3,6 +3,7 @@ import { Open_Sans, Oswald } from "next/font/google";
 import AnnouncementBar from "@/components/layout/AnnouncementBar";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import { SITE_URL } from "@/lib/site-url";
 import "./globals.css";
 
 // Site-wide ISR default: Supabase-backed content re-fetches at most
@@ -21,7 +22,6 @@ const openSans = Open_Sans({
   display: "swap",
 });
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://willohill.com";
 const SITE_DESCRIPTION =
   "Willo-Hill Baptist Church — Following Christ Together. Located in Willoughby, OH. Join us Sundays at 10:45am.";
 
