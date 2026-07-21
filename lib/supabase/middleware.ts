@@ -7,7 +7,7 @@ import {
 } from "./keys";
 
 export async function updateSession(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({ request });
+  const supabaseResponse = NextResponse.next({ request });
 
   // Until .env.local exists, skip session handling but keep /admin locked.
   if (!isSupabaseConfigured()) {
@@ -19,6 +19,26 @@ export async function updateSession(request: NextRequest) {
     }
     return supabaseResponse;
   }
+
+  try {
+    return await refreshSessionAndGuardAdmin(request, supabaseResponse);
+  } catch {
+    // A Supabase outage or misconfigured env var must not 500 the whole
+    // site. Fail open for public pages, closed for /admin.
+    const { pathname } = request.nextUrl;
+    if (pathname.startsWith("/admin") && pathname !== "/admin/login") {
+      const url = request.nextUrl.clone();
+      url.pathname = "/admin/login";
+      return NextResponse.redirect(url);
+    }
+    return NextResponse.next({ request });
+  }
+}
+
+async function refreshSessionAndGuardAdmin(
+  request: NextRequest,
+  supabaseResponse: NextResponse
+) {
 
   const supabase = createServerClient(
     getSupabaseUrl(),
