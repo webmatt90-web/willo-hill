@@ -1,5 +1,8 @@
 import { type NextRequest } from "next/server";
-import { updateSession } from "@/lib/supabase/middleware";
+// Relative import on purpose: Vercel's edge bundler leaves the "@/" alias
+// unresolved in middleware and fails the deploy ("referencing unsupported
+// modules").
+import { updateSession } from "./lib/supabase/middleware";
 
 export async function middleware(request: NextRequest) {
   return await updateSession(request);

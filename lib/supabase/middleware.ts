@@ -4,7 +4,7 @@ import {
   getSupabasePublicKey,
   getSupabaseUrl,
   isSupabaseConfigured,
-} from "@/lib/supabase/keys";
+} from "./keys";
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
